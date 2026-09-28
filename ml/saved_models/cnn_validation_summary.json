@@ -1,0 +1,40 @@
+{
+  "dataset_images": 12156,
+  "health": {
+    "accuracy": 0.9798519736842105,
+    "precision_weighted": 0.9798533425582694,
+    "recall_weighted": 0.9798519736842105,
+    "f1_weighted": 0.9798511654965495,
+    "n_test_samples": 2432,
+    "classes": [
+      "diseased",
+      "healthy"
+    ],
+    "roc_auc_weighted": 0.9986210510068968
+  },
+  "disease": {
+    "accuracy": 0.8931297709923665,
+    "precision_weighted": 0.901264332996849,
+    "recall_weighted": 0.8931297709923665,
+    "f1_weighted": 0.8971024875112477,
+    "n_test_samples": 1179,
+    "classes": [
+      "bacterial blight",
+      "blast",
+      "brown spot"
+    ],
+    "roc_auc_weighted": 0.9777286502297685
+  },
+  "rice_gate": {
+    "accuracy": 0.9810687022900764,
+    "precision_weighted": 0.9810828917442868,
+    "recall_weighted": 0.9810687022900764,
+    "f1_weighted": 0.9807446163918826,
+    "n_test_samples": 3275,
+    "classes": [
+      "not_rice",
+      "rice"
+    ],
+    "roc_auc_weighted": 0.991180848224036
+  }
+}

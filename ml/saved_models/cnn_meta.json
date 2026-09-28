@@ -1,0 +1,58 @@
+{
+  "backbone": "mobilenet_v3_large (IMAGENET1K_V2, frozen)",
+  "embed_dim": 960,
+  "health_classes": [
+    "diseased",
+    "healthy"
+  ],
+  "disease_classes": [
+    "bacterial blight",
+    "blast",
+    "brown spot",
+    "physiological stress"
+  ],
+  "disease_eval_classes": [
+    "bacterial blight",
+    "blast",
+    "brown spot"
+  ],
+  "gate_classes": [
+    "not_rice",
+    "rice"
+  ],
+  "gate_ensemble": "LogisticRegression + RandomForest (mean not_rice proba)",
+  "head_C": {
+    "health": 30.0,
+    "disease": 30.0,
+    "gate": 3.0
+  },
+  "ood_cosine_threshold": 0.8662955164909363,
+  "rice_reject_floor": 0.7921355366706848,
+  "split": "source_stratified (matches rf_* seeds 42/43)",
+  "train_augmentation": {
+    "rotate_deg": 20.0,
+    "zoom_max": 0.2,
+    "brightness_delta": 0.15,
+    "contrast_delta": 0.15,
+    "aug_per_image": 3,
+    "applied_to": "train splits only (health / disease / gate)",
+    "matches_serve_tta": true
+  },
+  "train_disease_counts": {
+    "bacterial blight": 1224,
+    "blast": 1314,
+    "brown spot": 1585,
+    "physiological stress": 500
+  },
+  "train_disease_counts_with_aug": {
+    "bacterial blight": 4896,
+    "blast": 5256,
+    "brown spot": 6340,
+    "physiological stress": 2000
+  },
+  "test_disease_counts": {
+    "bacterial blight": 350,
+    "blast": 376,
+    "brown spot": 453
+  }
+}

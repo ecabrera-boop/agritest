@@ -1,0 +1,99 @@
+{
+  "model_tag": "01",
+  "total_images": 11503,
+  "split": {
+    "train": 0.7,
+    "validation": 0.1,
+    "test": 0.2
+  },
+  "cv_folds": 5,
+  "feature_version": "v1-bgoff-rich427",
+  "imbalance_strategy": "class_weight_balanced",
+  "metric_note": "all scores labeled; search and final use macro-F1 / accuracy / bal-acc",
+  "model_paths": {
+    "gate": "D:\\rice_disease_project\\ml\\saved_models\\rf_rice_gate_01.pkl",
+    "health": "D:\\rice_disease_project\\ml\\saved_models\\rf_health_01.pkl",
+    "disease": "D:\\rice_disease_project\\ml\\saved_models\\rf_disease_01.pkl"
+  },
+  "models": {
+    "gate": {
+      "C": 0.05,
+      "cv_macro_f1": 0.8543172210575939,
+      "val_macro_f1": 0.7171479608692974,
+      "train": {
+        "accuracy": 0.922077922077922,
+        "macro_f1": 0.9115871968894829,
+        "balanced_accuracy": 0.9081632653061225
+      },
+      "val": {
+        "accuracy": 0.9001623376623377,
+        "macro_f1": 0.7171479608692974,
+        "balanced_accuracy": 0.8376623376623377
+      },
+      "test": {
+        "accuracy": 0.8883475436459602,
+        "macro_f1": 0.7116766027366938,
+        "balanced_accuracy": 0.8677253885136085
+      },
+      "rice_samples": 11543,
+      "not_rice_samples": 770
+    },
+    "health": {
+      "n_estimators": 300,
+      "max_depth": null,
+      "cv_macro_f1": 0.9906217595045371,
+      "majority_baseline": 0.8018879642280462,
+      "aug_per_image": 3,
+      "train": {
+        "accuracy": 0.9929511861880512,
+        "macro_f1": 0.988838103381116,
+        "balanced_accuracy": 0.9858095237401576
+      },
+      "val": {
+        "accuracy": 0.9904430929626412,
+        "macro_f1": 0.9846786831484876,
+        "balanced_accuracy": 0.9758771929824561
+      },
+      "test": {
+        "accuracy": 0.9921773142112125,
+        "macro_f1": 0.9875057014400208,
+        "balanced_accuracy": 0.9802631578947368
+      },
+      "n_train": 8051,
+      "n_val": 1151,
+      "n_test": 2301
+    },
+    "disease": {
+      "n_estimators": 500,
+      "max_depth": null,
+      "cv_macro_f1": 0.9819803860435534,
+      "majority_baseline": 0.28407682775712517,
+      "aug_per_image": 3,
+      "train": {
+        "accuracy": 0.965458488228005,
+        "macro_f1": 0.9675832940577533,
+        "balanced_accuracy": 0.9667310818158544
+      },
+      "val": {
+        "accuracy": 0.9739978331527628,
+        "macro_f1": 0.9753322880226285,
+        "balanced_accuracy": 0.9714073491992217
+      },
+      "test": {
+        "accuracy": 0.9582655826558265,
+        "macro_f1": 0.9575400562790728,
+        "balanced_accuracy": 0.9526678266726538
+      },
+      "n_train": 6456,
+      "n_val": 923,
+      "n_test": 1845
+    }
+  },
+  "disease_classes": [
+    "bacterial blight",
+    "blast",
+    "brown spot",
+    "leaf smut",
+    "tungro"
+  ]
+}

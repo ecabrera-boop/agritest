@@ -1,0 +1,87 @@
+# One-time: consolidate all leaf smut (HF/Kaggle/UCI) into data/sources/leaf_smut_all/
+python data/expand_dataset.py --leaf-smut-all --sources --data-dir data/sources --rebuild
+
+# Balance leaf smut to smallest other disease class (~1308+); also runs automatically before train
+python data/expand_dataset.py --balance-leaf-smut --sources --skip-download
+
+# Full training (11k+ images) — app auto-loads these *_01.pkl models
+python ml/train_model_01.py --data data/sources
+python ml/train_model_01.py --data data/sources --quick
+
+# Legacy quick trainer (600 images) — only if you set ML_MODEL_TAG=default
+python ml/train_models.py --data data/sources
+python ml/train_models.py --data data/sources --quick
+
+
+
+after any retrain (uses active model set, usually tag 01)
+python ml/evaluate_models.py --data data/sources
+python ml/validate_preprocessing.py --data data/sources
+
+
+============================================================
+FINAL RESULTS (held-out test split) — train_models.py / default
+============================================================
+Health  test accuracy: 94.03%
+Disease test accuracy: 90.48%
+Report: ml/saved_models/training_report.json
+Models: rf_health.pkl, rf_disease.pkl, rf_rice_gate.pkl
+
+============================================================
+VALIDATION SUMMARY (held-out test set)
+============================================================
+Metric           Health    Disease
+----------------------------------
+Accuracy         0.9403     0.9048
+Precision        0.9402     0.9153
+Recall           0.9403     0.9048
+F1-Score         0.9400     0.9098
+
+Test samples: health=1826, disease=1177
+Dataset images: 9129  (unique after dedup; 20,634 raw files on disk)
+Cached: ml/saved_models/validation_summary.json
+
+============================================================
+DATASET CURATION — why 20,634 files become 9,129 images
+============================================================
+Removed 8,035 images during collect_samples() deduplication:
+  • 7,528 byte-identical copies (MD5) — same file repeated across leaf/data_1|2|3 and HF/UCI sources
+  •   507 re-encoded duplicates (dHash) — same photo saved at different JPEG quality
+
+Why removed: identical images in both train AND test inflate accuracy (~100% / ROC-AUC 1.0).
+Dedup keeps each real leaf photo once; train/val/test split then stays leakage-free.
+
+Classes kept (leaf/): healthy, bacterial blight, blast, brown spot
+Classes dropped: tungro, leaf smut (no folders under leaf/ in this build)
+
+Train-only extras (NOT counted in 9129 or test metrics):
+  senescent_healthy_positives=500, physiological_stress_positives=500,
+  rice_gate_positives=500, not_rice=1970
+
+Test count math (20% held-out):
+  Health  test = 20% × 9,129 all images        ≈ 1,826
+  Disease test = 20% × 5,883 diseased-only images ≈ 1,177
+
+(Older tag-01 run: 11,503 images, health test=2301, disease test=1845 — less dedup, included tungro/leaf smut)
+
+# Force legacy models: set ML_MODEL_TAG=default before runserver
+
+
+python ml/evaluate_models.py --data data/sources
+
+python ml\retrain_clean.py
+
+python ml/train_models.py
+
+
+python -u ml/train_models.py --data leaf
+
+
+Layer 1 (health) class counts:
+  diseased: 5883
+  healthy: 6263
+
+Layer 2 (disease) class counts:
+  bacterial blight: 1749
+  blast: 1877
+  brown spot: 2257

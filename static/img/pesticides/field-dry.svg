@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="Dry rainfed rice field">
+  <rect width="320" height="180" rx="14" fill="#fff8e1"/>
+  <rect x="0" y="96" width="320" height="84" fill="#d7ccc8"/>
+  <path d="M0 96c50-10 90 8 140 0s90-12 180 4v20H0z" fill="#a1887f"/>
+  <g fill="#558b2f">
+    <path d="M40 100c0-32 9-54 9-54s9 22 9 54h-18z"/>
+    <path d="M82 98c0-36 10-58 10-58s10 22 10 58h-20z"/>
+    <path d="M126 102c0-30 8-50 8-50s8 20 8 50h-16z"/>
+    <path d="M166 96c0-38 11-60 11-60s11 22 11 60h-22z"/>
+    <path d="M210 100c0-32 9-52 9-52s9 20 9 52h-18z"/>
+    <path d="M252 98c0-34 10-54 10-54s10 20 10 54h-20z"/>
+    <path d="M292 104c0-26 7-44 7-44s7 18 7 44h-14z"/>
+  </g>
+  <g fill="#9ccc65">
+    <ellipse cx="49" cy="48" rx="11" ry="4"/>
+    <ellipse cx="92" cy="42" rx="12" ry="5"/>
+    <ellipse cx="134" cy="54" rx="10" ry="4"/>
+    <ellipse cx="177" cy="38" rx="12" ry="5"/>
+    <ellipse cx="219" cy="50" rx="10" ry="4"/>
+    <ellipse cx="262" cy="46" rx="11" ry="4"/>
+  </g>
+  <path d="M24 128c40 6 70-8 110 0s80 10 120-2 50-8 66 4" fill="none" stroke="#8d6e63" stroke-width="2" stroke-dasharray="6 6"/>
+  <circle cx="270" cy="36" r="14" fill="#ffcc80"/>
+  <text x="16" y="24" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#5d4037">Dry leaves · knapsack spray</text>
+</svg>

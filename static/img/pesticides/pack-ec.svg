@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" role="img" aria-label="Emulsifiable concentrate bottle">
+  <rect width="160" height="200" rx="12" fill="#fff3e0"/>
+  <rect x="68" y="18" width="24" height="16" rx="4" fill="#5d4037"/>
+  <rect x="62" y="32" width="36" height="10" rx="3" fill="#6d4c41"/>
+  <path d="M52 48h56l8 18v96c0 8-6 14-14 14H58c-8 0-14-6-14-14V66l8-18z" fill="#ef6c00"/>
+  <path d="M52 48h56l8 18H44l8-18z" fill="#e65100"/>
+  <rect x="58" y="78" width="44" height="56" rx="6" fill="#fff8e1"/>
+  <rect x="66" y="90" width="28" height="32" rx="4" fill="#ffcc80"/>
+  <text x="80" y="176" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#bf360c">EC</text>
+  <text x="80" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="7.5" fill="#e65100">LIQUID CONCENTRATE</text>
+</svg>

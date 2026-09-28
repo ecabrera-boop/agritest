@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-label="Wet flooded rice field">
+  <rect width="320" height="180" rx="14" fill="#e3f2fd"/>
+  <rect x="0" y="88" width="320" height="92" fill="#4fc3f7"/>
+  <rect x="0" y="100" width="320" height="80" fill="#0288d1"/>
+  <path d="M0 96c40 8 80-8 120 0s80 8 120 0 80-8 80 4v16H0z" fill="#81d4fa"/>
+  <g fill="#2e7d32">
+    <path d="M36 108c0-28 8-48 8-48s8 20 8 48h-16z"/>
+    <path d="M76 104c0-34 10-56 10-56s10 22 10 56h-20z"/>
+    <path d="M118 110c0-30 9-50 9-50s9 20 9 50h-18z"/>
+    <path d="M158 106c0-36 11-58 11-58s11 22 11 58h-22z"/>
+    <path d="M202 108c0-32 9-52 9-52s9 20 9 52h-18z"/>
+    <path d="M242 104c0-34 10-54 10-54s10 20 10 54h-20z"/>
+    <path d="M282 110c0-28 8-46 8-46s8 18 8 46h-16z"/>
+  </g>
+  <g fill="#66bb6a">
+    <ellipse cx="44" cy="62" rx="10" ry="4"/>
+    <ellipse cx="86" cy="50" rx="12" ry="5"/>
+    <ellipse cx="127" cy="62" rx="10" ry="4"/>
+    <ellipse cx="169" cy="50" rx="12" ry="5"/>
+    <ellipse cx="211" cy="58" rx="10" ry="4"/>
+    <ellipse cx="252" cy="52" rx="11" ry="4"/>
+    <ellipse cx="290" cy="66" rx="9" ry="3.5"/>
+  </g>
+  <circle cx="96" cy="142" r="5" fill="#ce93d8"/>
+  <circle cx="148" cy="150" r="4" fill="#ba68c8"/>
+  <circle cx="210" cy="138" r="5" fill="#ab47bc"/>
+  <text x="16" y="24" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#01579b">Standing water 35 cm</text>
+</svg>

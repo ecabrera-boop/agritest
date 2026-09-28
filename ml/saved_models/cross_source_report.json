@@ -1,0 +1,35 @@
+{
+  "note": "In-source accuracy is optimistic because disease classes are single-source (see single_source_classes). Cross-source accuracy is the honest generalization estimate.",
+  "disease_uniques_by_source_class": {
+    "data_1/bacterial blight": 1042,
+    "data_1/blast": 803,
+    "data_1/brown spot": 1162,
+    "data_3/bacterial blight": 28,
+    "data_3/brown spot": 30,
+    "data_4/bacterial blight": 208,
+    "data_4/blast": 274,
+    "data_4/brown spot": 265
+  },
+  "single_source_classes": [],
+  "train_source": "all except data_4",
+  "test_source": "data_4",
+  "train_class_counts": {
+    "bacterial blight": 400,
+    "blast": 400,
+    "brown spot": 400
+  },
+  "test_class_counts": {
+    "bacterial blight": 208,
+    "blast": 274,
+    "brown spot": 265
+  },
+  "in_source_accuracy": 0.9875,
+  "cross_source_accuracy": 0.3628,
+  "cross_source_macro_f1": 0.2766,
+  "cross_source_classes": [
+    "bacterial blight",
+    "blast",
+    "brown spot"
+  ],
+  "limitation": "Blast has no independent source, so it cannot be cross-validated; the cross-source figure covers only the classes present in data_3. Collect disease images (especially blast) from additional sources to obtain a full generalization estimate."
+}

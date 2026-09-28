@@ -1,0 +1,30 @@
+{
+  "dataset_images": 5316,
+  "health": {
+    "accuracy": 0.5592105263157895,
+    "precision_weighted": 0.7799622192063558,
+    "recall_weighted": 0.5592105263157895,
+    "f1_weighted": 0.498787466982779,
+    "roc_auc_weighted": 0.8202182570542894,
+    "n_test_samples": 1064,
+    "classes": [
+      "diseased",
+      "healthy"
+    ]
+  },
+  "disease": {
+    "accuracy": 0.2528548123980424,
+    "precision_weighted": 0.1529507536514901,
+    "recall_weighted": 0.2528548123980424,
+    "f1_weighted": 0.18416377517111612,
+    "roc_auc_weighted": 0.4463547646201936,
+    "n_test_samples": 613,
+    "classes": [
+      "bacterial blight",
+      "blast",
+      "brown spot",
+      "leaf smut",
+      "tungro"
+    ]
+  }
+}

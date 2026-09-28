@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 140" role="img" aria-label="How to spray rice: mix, set water, spray leaves">
+  <rect width="640" height="140" rx="12" fill="#f1f8f4"/>
+  <!-- Mix -->
+  <circle cx="70" cy="58" r="28" fill="#e8f5e9" stroke="#81c784" stroke-width="2"/>
+  <rect x="58" y="46" width="24" height="28" rx="4" fill="#43a047"/>
+  <rect x="64" y="40" width="12" height="8" rx="2" fill="#2e7d32"/>
+  <text x="70" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#1b4332">1. Mix</text>
+  <text x="70" y="124" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#5d6b63">Follow the label</text>
+  <!-- Water -->
+  <circle cx="210" cy="58" r="28" fill="#e3f2fd" stroke="#64b5f6" stroke-width="2"/>
+  <path d="M210 42c-10 14-16 20-16 26a16 16 0 1 0 32 0c0-6-6-12-16-26z" fill="#0288d1"/>
+  <text x="210" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#1b4332">2. Set water</text>
+  <text x="210" y="124" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#5d6b63">Wet 25 cm · dry leaves</text>
+  <!-- Spray -->
+  <circle cx="350" cy="58" r="28" fill="#fff8e1" stroke="#ffcc80" stroke-width="2"/>
+  <rect x="336" y="48" width="16" height="22" rx="3" fill="#ef6c00"/>
+  <path d="M352 54h12l8-6" fill="none" stroke="#ef6c00" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="372" cy="46" r="2" fill="#ffcc80"/>
+  <circle cx="378" cy="50" r="1.5" fill="#ffcc80"/>
+  <text x="350" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#1b4332">3. Spray leaves</text>
+  <text x="350" y="124" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#5d6b63">Both sides, no drip</text>
+  <!-- PHI -->
+  <circle cx="490" cy="58" r="28" fill="#f3e5f5" stroke="#ce93d8" stroke-width="2"/>
+  <circle cx="490" cy="58" r="14" fill="none" stroke="#8e24aa" stroke-width="3"/>
+  <path d="M490 50v10l6 4" fill="none" stroke="#8e24aa" stroke-width="3" stroke-linecap="round"/>
+  <text x="490" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#1b4332">4. Wait for PHI</text>
+  <text x="490" y="124" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#5d6b63">Before harvest</text>
+  <!-- arrows -->
+  <path d="M108 58h64M248 58h64M388 58h64" fill="none" stroke="#a5d6a7" stroke-width="3" stroke-linecap="round"/>
+  <path d="M166 52l8 6-8 6M306 52l8 6-8 6M446 52l8 6-8 6" fill="none" stroke="#a5d6a7" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="580" cy="58" r="22" fill="#c8e6c9"/>
+  <text x="580" y="63" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="16"></text>
+  <text x="580" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#1b4332">Safe use</text>
+  <text x="580" y="124" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#5d6b63">PPE + MAO advice</text>
+</svg>

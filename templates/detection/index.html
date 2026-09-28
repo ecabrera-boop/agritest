@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="{{ t.html_lang }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>{{ site.site_brand }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  {% load static %}
+  {% load ui_i18n %}
+  {% include "detection/_head_icons.html" %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=system-green-2" />
+</head>
+<body>
+{% include "detection/_navbar.html" %}
+
+<div class="hero-banner py-5 mb-4">
+  <div class="container text-center">
+    <div class="hero-icon mb-3"><i class="bi bi-leaf-fill"></i></div>
+    <h1 class="display-5 fw-bold">{% if is_filipino %}{{ t.hero_title }}{% else %}{{ site.hero_title }}{% endif %}</h1>
+    <p class="lead text-muted">{% if is_filipino %}{{ t.hero_tagline }}{% else %}{{ site.hero_tagline }}{% endif %}</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row justify-content-center g-4">
+
+    <div class="col-lg-7">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+          <h5 class="card-title mb-4"><i class="bi bi-upload me-2 text-success"></i>{{ t.upload_title }}</h5>
+          <p class="text-muted small mb-3">
+            <i class="bi bi-shield-check me-1 text-success"></i>
+            {{ t.upload_help }}
+          </p>
+
+          <div id="upload-error-sign" class="upload-error-sign alert d-none mb-3" role="alert" aria-live="polite">
+            <div class="d-flex gap-2 align-items-start">
+              <i id="upload-error-icon" class="bi bi-exclamation-octagon-fill fs-5 flex-shrink-0 mt-1"></i>
+              <div class="min-w-0 flex-grow-1">
+                <strong id="upload-error-title" class="d-block mb-1"></strong>
+                <div id="upload-error-message" class="small mb-0" style="white-space: pre-line;"></div>
+                <p class="small text-muted mb-0 mt-2">
+                  <strong>{{ t.accepted }}</strong> {{ t.accepted_hint }}
+                </p>
+              </div>
+              <button type="button" class="btn-close flex-shrink-0" id="upload-error-dismiss" aria-label="{{ t.remove_photo }}"></button>
+            </div>
+          </div>
+
+          <div id="drop-zone" class="drop-zone mb-3">
+            <i class="bi bi-cloud-arrow-up-fill fs-1 text-success"></i>
+            <p class="mt-2 mb-0 fw-semibold">{{ t.drop_title }}</p>
+            <p class="text-muted small">{{ t.drop_sub }}</p>
+          </div>
+
+          <form id="upload-form" method="post" action="{% url 'upload_leaf' %}" enctype="multipart/form-data"
+                data-validate-url="{% url 'validate_layer0' %}"
+                data-locate-url="{% url 'locate_capture' %}">
+            {% csrf_token %}
+            <input type="hidden" name="latitude" id="id_latitude" value="" />
+            <input type="hidden" name="longitude" id="id_longitude" value="" />
+            <div id="file-input-row" class="mb-3">
+              <label class="form-label fw-semibold">{{ t.choose_image }}</label>
+              <input type="file" class="form-control" name="image" id="id_image"
+                     accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required />
+              <div class="form-text">{{ t.file_types }}</div>
+              <button type="button" class="btn btn-outline-success w-100 mt-2" id="use-location-btn">
+                <i class="bi bi-geo-alt-fill me-2"></i>{{ t.use_my_location }}
+              </button>
+            </div>
+
+            <div id="preview-container" class="preview-panel mb-3 d-none">
+              <div class="preview-panel-header d-flex justify-content-between align-items-start gap-2 mb-2">
+                <div class="text-start min-w-0">
+                  <div class="text-muted small">{{ t.selected_image }}</div>
+                  <div id="preview-filename" class="preview-filename small fw-semibold text-truncate"></div>
+                  <div id="preview-location" class="preview-location text-muted small mt-1 d-none">
+                    <i class="bi bi-geo-alt-fill me-1"></i><span id="preview-location-text"></span>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" id="remove-preview-btn">
+                  <i class="bi bi-trash me-1"></i>{{ t.remove_photo }}
+                </button>
+              </div>
+              <div id="preview-processing" class="alert alert-light border small py-2 mb-2 d-none">
+                <span class="spinner-border spinner-border-sm text-success me-2" role="status"></span>
+                <span id="preview-processing-text">{{ t.checking_image }}</span>
+              </div>
+              <div id="layer0-warning" class="alert alert-warning border small py-2 mb-2 d-none" role="alert" aria-live="polite">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                <span id="layer0-warning-text"></span>
+              </div>
+              <img id="preview-original" class="preview-thumb" alt="{{ t.selected_image }}" />
+              <div id="preview-location-card" class="preview-location-card d-none mt-3">
+                <div class="result-summary-item result-summary-item--wide">
+                  <span class="result-summary-label">{{ t.location }}</span>
+                  <span class="result-summary-value" id="preview-location-name"></span>
+                  <span class="result-summary-sub text-muted d-none" id="preview-location-coords"></span>
+                  <a id="preview-location-map-link" class="result-map-link preview-map-btn d-none" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-map me-1"></i>{{ t.open_map }}
+                  </a>
+                </div>
+                <div id="preview-location-map-wrap" class="result-location-map preview-location-map mt-2 d-none">
+                  <iframe id="preview-location-map" title="{{ t.location }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+              </div>
+              <p id="preview-location-hint" class="preview-location-hint text-muted small mt-2 mb-0 d-none">
+                <i class="bi bi-info-circle me-1"></i>{{ t.allow_location_hint }}
+              </p>
+              <button type="button" class="btn btn-outline-success w-100 mt-2" id="preview-use-location-btn">
+                <i class="bi bi-geo-alt-fill me-2"></i>{{ t.use_my_location }}
+              </button>
+              <div class="text-center mt-2">
+                <button type="button" class="btn btn-sm btn-link text-success px-0" id="change-image-btn">
+                  <i class="bi bi-arrow-repeat me-1"></i>{{ t.choose_different }}
+                </button>
+              </div>
+            </div>
+
+            <div id="analysis-actions" class="d-grid gap-2 d-none">
+              <button type="submit" class="btn btn-success btn-lg" id="submit-btn">
+                <i class="bi bi-cpu-fill me-2"></i>{{ t.analyse_leaf }}
+              </button>
+            </div>
+            <button type="button" class="btn btn-outline-secondary w-100 mt-2" id="camera-btn">
+              <i class="bi bi-camera-fill me-2"></i>{{ t.use_camera }}
+            </button>
+            <p class="text-muted small mt-2 mb-0 d-md-none">
+              <i class="bi bi-geo-alt me-1"></i>{{ t.allow_location_hint }}
+            </p>
+          </form>
+
+          <div id="camera-overlay" class="camera-overlay d-none" role="dialog" aria-modal="true" aria-hidden="true" aria-label="{{ t.use_camera }}">
+            <div class="camera-overlay-stage">
+              <p class="camera-overlay-hint">{{ t.camera_hint }}</p>
+              <video id="camera-stream" class="camera-overlay-video" autoplay playsinline muted></video>
+              <div class="camera-overlay-guide" aria-hidden="true"></div>
+            </div>
+            <div id="camera-controls" class="camera-overlay-controls">
+              <button type="button" class="btn btn-secondary" id="close-camera-btn" aria-label="{{ t.close_camera }}">
+                <i class="bi bi-x-lg"></i>
+              </button>
+              <button type="button" class="btn btn-danger" id="capture-btn">
+                <i class="bi bi-camera me-1"></i>{{ t.capture }}
+              </button>
+            </div>
+          </div>
+          <canvas id="capture-canvas" class="d-none"></canvas>
+        </div>
+      </div>
+
+      <div id="loading-overlay" class="d-none mt-3">
+        <div class="alert alert-info d-flex align-items-center gap-3">
+          <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+          <span>{{ t.analysing }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5 align-self-start">
+      <div class="card shadow-sm border-0 recent-scans-card">
+        <div class="card-body p-4">
+          <h5 class="card-title mb-3"><i class="bi bi-clock-history me-2 text-success"></i>{{ t.recent_scans }}</h5>
+          {% if recent_scans %}
+            <ul class="list-group list-group-flush recent-scans-list">
+              {% for scan in recent_scans %}
+              <li class="list-group-item px-0 recent-scans-item">
+                <a href="{% url 'scan_detail' scan.pk %}" class="text-decoration-none recent-scans-link">
+                  <img src="{{ scan.image.url }}" alt="{{ t.alt_leaf_scan }}" class="rounded recent-scans-thumb" />
+                  <div class="recent-scans-meta">
+                    <span class="badge bg-{{ scan.status_badge }}">{% health_label scan %}</span>
+                    {% if scan.disease_name and not scan.is_not_rice %}<div class="recent-scans-name">{{ scan.disease_name }}</div>{% endif %}
+                    <div class="recent-scans-time">{{ scan.uploaded_at|timesince }} {{ t.ago }}</div>
+                    {% if scan.has_location %}
+                    <div class="recent-scans-location"><i class="bi bi-geo-alt me-1"></i>{{ scan.location_display }}</div>
+                    {% endif %}
+                  </div>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            <a href="{% url 'scan_history' %}" class="btn btn-outline-success btn-sm mt-3 w-100">{{ t.view_all_history }}</a>
+            <a href="{% url 'scan_locations' %}" class="btn btn-outline-success btn-sm mt-2 w-100">{{ t.view_all_locations }}</a>
+          {% else %}
+            <div class="text-center text-muted py-4">
+              <i class="bi bi-inbox fs-2"></i>
+              <p class="mt-2 mb-0">{{ t.no_scans_yet }}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row mt-5 g-3">
+    <div class="col-12"><h5 class="text-muted fw-semibold mb-3">{{ t.how_it_works }}</h5></div>
+    {% for step, icon, title, desc in howit %}
+    <div class="col-md-4">
+      <div class="card border-0 bg-light h-100">
+        <div class="card-body text-center p-4">
+          <div class="step-icon mb-3"><i class="bi bi-{{ icon }}"></i></div>
+          <h6 class="fw-bold">{{ title }}</h6>
+          <p class="text-muted small mb-0">{{ desc }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% load static %}
+{{ js_i18n|json_script:"rg-i18n" }}
+<script src="{% static 'js/main.js' %}?v=scan-location-mobile-2"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

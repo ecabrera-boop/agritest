@@ -1,0 +1,70 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-success shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="bi bi-leaf-fill me-2"></i>{{ site.site_brand }}
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'index' %} active{% endif %}" href="/"><i class="bi bi-house me-1"></i>{{ t.home }}</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'scan_history' %} active{% endif %}" href="{% url 'scan_history' %}"><i class="bi bi-clock-history me-1"></i>{{ t.history }}</a></li>
+        <li class="nav-item"><a class="nav-link{% if request.resolver_match.url_name == 'scan_locations' %} active{% endif %}" href="{% url 'scan_locations' %}"><i class="bi bi-geo-alt me-1"></i>{{ t.locations }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="/api/scans/" target="_blank"><i class="bi bi-code-slash me-1"></i>{{ t.api }}</a></li>
+        <li class="nav-item"><a class="nav-link" href="/admin/" target="_blank"><i class="bi bi-gear me-1"></i>{{ t.admin }}</a></li>
+        <li class="nav-item lang-switch-item dropdown">
+          <button class="lang-menu-btn dropdown-toggle"
+                  type="button"
+                  id="langMenuBtn"
+                  data-bs-toggle="dropdown"
+                  data-bs-auto-close="true"
+                  aria-expanded="false"
+                  aria-label="{{ t.lang_label }}">
+            <i class="bi bi-translate" aria-hidden="true"></i>
+            {% if lang == 'ilo' %}
+              <span class="lang-menu-code">ILO</span>
+              <span class="lang-menu-name">{{ t.lang_ilo }}</span>
+            {% elif lang == 'fil' %}
+              <span class="lang-menu-code">TAG</span>
+              <span class="lang-menu-name">{{ t.lang_tag }}</span>
+            {% else %}
+              <span class="lang-menu-code">EN</span>
+              <span class="lang-menu-name">{{ t.lang_en }}</span>
+            {% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end lang-menu" aria-labelledby="langMenuBtn">
+            <li>
+              <a class="dropdown-item lang-menu-option{% if lang == 'en' %} active{% endif %}"
+                 href="{% url 'set_language' 'en' %}?next={{ request.get_full_path|urlencode }}"
+                 {% if lang == 'en' %}aria-current="true"{% endif %}>
+                <span class="lang-menu-option-code">EN</span>
+                <span>{{ t.lang_en }}</span>
+                {% if lang == 'en' %}<i class="bi bi-check2 ms-auto" aria-hidden="true"></i>{% endif %}
+              </a>
+            </li>
+            <li><h6 class="dropdown-header">{{ t.lang_fil }}</h6></li>
+            <li>
+              <a class="dropdown-item lang-menu-option{% if lang == 'fil' %} active{% endif %}"
+                 href="{% url 'set_language' 'fil' %}?next={{ request.get_full_path|urlencode }}"
+                 {% if lang == 'fil' %}aria-current="true"{% endif %}>
+                <span class="lang-menu-option-code">TAG</span>
+                <span>{{ t.lang_tag }}</span>
+                {% if lang == 'fil' %}<i class="bi bi-check2 ms-auto" aria-hidden="true"></i>{% endif %}
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item lang-menu-option{% if lang == 'ilo' %} active{% endif %}"
+                 href="{% url 'set_language' 'ilo' %}?next={{ request.get_full_path|urlencode }}"
+                 {% if lang == 'ilo' %}aria-current="true"{% endif %}>
+                <span class="lang-menu-option-code">ILO</span>
+                <span>{{ t.lang_ilo }}</span>
+                {% if lang == 'ilo' %}<i class="bi bi-check2 ms-auto" aria-hidden="true"></i>{% endif %}
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

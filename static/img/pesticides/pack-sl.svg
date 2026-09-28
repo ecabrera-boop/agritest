@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" role="img" aria-label="Soluble liquid bottle">
+  <rect width="160" height="200" rx="12" fill="#e0f7fa"/>
+  <rect x="67" y="16" width="26" height="16" rx="4" fill="#00695c"/>
+  <rect x="61" y="30" width="38" height="10" rx="3" fill="#00897b"/>
+  <path d="M54 46h52c7 0 12 5 12 12v106c0 8-6 14-14 14H56c-8 0-14-6-14-14V58c0-7 5-12 12-12z" fill="#00897b"/>
+  <path d="M46 118h68v46c0 8-6 14-14 14H60c-8 0-14-6-14-14v-46z" fill="#26a69a" opacity="0.85"/>
+  <rect x="58" y="62" width="44" height="40" rx="6" fill="#e0f2f1"/>
+  <text x="80" y="86" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#004d40">SL</text>
+  <text x="80" y="192" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="8" fill="#004d40">SOLUBLE LIQUID</text>
+</svg>

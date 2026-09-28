@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="{{ t.html_lang }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ t.analysis_result }} #{{ scan.pk }} — {{ site.site_brand }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  {% load static %}
+  {% load ui_i18n %}
+  {% include "detection/_head_icons.html" %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}?v=system-green-2" />
+</head>
+<body class="result-page">
+{% include "detection/_navbar.html" %}
+
+<div class="container-fluid result-container py-4 py-lg-5">
+  <div class="row">
+    <div class="col-12">
+
+      <div class="result-toolbar d-flex flex-wrap align-items-center gap-2 mb-4 no-print">
+        <a href="/?new_scan=1" class="btn btn-light btn-sm result-back-btn" data-clear-draft>
+          <i class="bi bi-arrow-left"></i><span class="d-none d-sm-inline ms-1">{{ t.new_scan }}</span>
+        </a>
+        <a href="{% url 'scan_history' %}" class="btn btn-light btn-sm result-back-btn">
+          <i class="bi bi-clock-history"></i><span class="d-none d-sm-inline ms-1">{{ t.history }}</span>
+        </a>
+        <button type="button" class="btn btn-light btn-sm result-back-btn" id="printResultBtn" title="{{ t.print_result }}">
+          <i class="bi bi-printer"></i><span class="d-none d-sm-inline ms-1">{{ t.print }}</span>
+        </button>
+        <span class="result-meta text-muted small">
+          {{ t.scan_number }}{{ scan.pk }} · <i class="bi bi-calendar3"></i> {{ scan.uploaded_at|date:"M j, Y · g:i A" }}
+        </span>
+      </div>
+
+      <div class="print-header d-none">
+        <div class="print-header-top">
+          <div>
+            <h1 class="print-brand mb-1">{{ site.site_brand|default:"RiceGuard" }}</h1>
+            <p class="print-subtitle mb-0">{{ t.scan_report }}</p>
+          </div>
+          <div class="print-meta text-end">
+            <div><strong>{{ t.scan_number }}</strong> {{ scan.pk }}</div>
+            <div><strong>{{ t.date }}</strong> {{ scan.uploaded_at|date:"M j, Y · g:i A" }}</div>
+            {% if scan.has_location %}
+            <div><strong>{{ t.location }}</strong> {{ scan.location_display }}</div>
+            {% endif %}
+            <div><strong>{{ t.printed }}</strong> <span id="printedAtStamp"></span></div>
+          </div>
+        </div>
+        <hr class="print-hr" />
+      </div>
+
+      <header class="result-hero result-hero--{% if is_not_rice %}not_rice{% else %}{{ scan.result_health }}{% endif %} mb-4">
+        <div class="result-hero-icon" aria-hidden="true">
+          {% if is_not_rice %}
+          <i class="bi bi-slash-circle"></i>
+          {% elif scan.result_health == "healthy" %}
+          <i class="bi bi-check-lg"></i>
+          {% elif scan.result_health == "diseased" %}
+          <i class="bi bi-exclamation-lg"></i>
+          {% else %}
+          <i class="bi bi-question-lg"></i>
+          {% endif %}
+        </div>
+        <div class="result-hero-body">
+          <p class="result-hero-label mb-1">{{ t.analysis_result }}</p>
+          <h1 class="result-hero-title mb-0">{{ health_display }}</h1>
+          {% if is_not_rice %}
+          <p class="result-hero-disease mb-0">{{ not_rice_note }}</p>
+          {% elif scan.disease_name %}
+          <p class="result-hero-disease mb-0 text-capitalize">{{ scan.disease_name|title }}</p>
+          {% endif %}
+        </div>
+      </header>
+
+      {% if scan.processing_error %}
+      <div class="alert alert-warning border-0 result-alert d-flex gap-2 align-items-start mb-4">
+        <i class="bi bi-exclamation-circle-fill mt-1 flex-shrink-0"></i>
+        <div>
+          <strong>{{ t.processing_warning }}</strong>
+          <div class="small mt-1">{{ processing_error_display }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if gate_warning_display %}
+      <div class="alert alert-warning border-0 result-alert d-flex gap-2 align-items-start mb-4">
+        <i class="bi bi-eye-fill mt-1 flex-shrink-0"></i>
+        <div>
+          <strong>{{ t.leaf_check_warning }}</strong>
+          <div class="small mt-1">{{ gate_warning_display }}</div>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="row g-4 align-items-start">
+
+        <div class="col-lg-5">
+          <div class="card result-panel scan-photo-card border-0">
+            <div class="card-body p-3 p-md-4">
+              <h2 class="result-panel-title h6 mb-3">
+                <i class="bi bi-image me-2"></i>{{ t.your_leaf_photo }}
+              </h2>
+              {% if layer0_passed %}
+              <figure class="result-photo-single mb-0">
+                <button type="button" class="result-photo-open" data-photo-preview="{{ scan.image.url }}" data-photo-alt="{{ t.alt_uploaded_leaf }}" aria-label="{{ t.tap_to_enlarge }}">
+                  <img src="{{ scan.image.url }}" alt="{{ t.alt_uploaded_leaf }}" class="scan-result-photo" />
+                  <span class="result-photo-zoom-hint no-print"><i class="bi bi-zoom-in"></i>{{ t.tap_to_enlarge }}</span>
+                </button>
+              </figure>
+              {% if scan.has_location %}
+              <p class="result-photo-note small mb-0 mt-3">
+                <i class="bi bi-geo-alt-fill text-success me-1"></i>{{ scan.location_display }}
+                {% if scan.maps_url %}
+                <a href="{{ scan.maps_url }}" class="result-map-link ms-2 no-print" target="_blank" rel="noopener noreferrer">{{ t.open_map }}</a>
+                {% endif %}
+              </p>
+              {% endif %}
+              <p class="result-photo-note text-muted small mb-0 mt-2">{{ t.analysed_from_upload }}</p>
+              {% else %}
+              <figure class="result-photo-single mb-0">
+                <button type="button" class="result-photo-open" data-photo-preview="{{ scan.image.url }}" data-photo-alt="{{ t.alt_original_upload }}" aria-label="{{ t.tap_to_enlarge }}">
+                  <img src="{{ scan.image.url }}" alt="{{ t.alt_original_upload }}" class="scan-result-photo" />
+                  <span class="result-photo-zoom-hint no-print"><i class="bi bi-zoom-in"></i>{{ t.tap_to_enlarge }}</span>
+                </button>
+              </figure>
+              {% if scan.has_location %}
+              <p class="result-photo-note small mb-0 mt-3">
+                <i class="bi bi-geo-alt-fill text-success me-1"></i>{{ scan.location_display }}
+              </p>
+              {% endif %}
+              <p class="result-photo-note text-muted small mb-0 mt-2">{{ t.did_not_pass_leaf_check }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-7 d-flex flex-column gap-4">
+
+          <div class="card result-panel border-0">
+            <div class="card-body p-3 p-md-4">
+              <h2 class="result-panel-title h6 mb-3"><i class="bi bi-clipboard-data me-2"></i>{{ t.at_a_glance }}</h2>
+              <div class="result-summary-grid">
+                <div class="result-summary-item">
+                  <span class="result-summary-label">{{ t.result }}</span>
+                  <span class="result-summary-value">{{ health_display }}</span>
+                </div>
+                <div class="result-summary-item">
+                  <span class="result-summary-label">{{ t.disease }}</span>
+                  <span class="result-summary-value text-capitalize">{% if scan.disease_name and not is_not_rice %}{{ scan.disease_name }}{% else %}{{ t.na }}{% endif %}</span>
+                </div>
+                <div class="result-summary-item">
+                  <span class="result-summary-label">{{ t.scan_time }}</span>
+                  <span class="result-summary-value">{{ scan.uploaded_at|date:"M j, g:i A" }}</span>
+                </div>
+                <div class="result-summary-item result-summary-item--wide">
+                  <span class="result-summary-label">{{ t.location }}</span>
+                  {% if scan.has_location %}
+                  <span class="result-summary-value">
+                    <i class="bi bi-geo-alt-fill text-success me-1"></i>{{ scan.location_display }}
+                  </span>
+                  {% if scan.coordinates_display and scan.location_name %}
+                  <span class="result-summary-sub text-muted">{{ scan.coordinates_display }}</span>
+                  {% endif %}
+                  <a href="{{ scan.maps_url }}" class="result-map-link preview-map-btn no-print" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-map me-1"></i>{{ t.open_map }}
+                  </a>
+                  {% else %}
+                  <span class="result-summary-value text-muted">{{ t.location_unavailable }}</span>
+                  {% endif %}
+                </div>
+              </div>
+              {% if scan.has_location %}
+              <div class="result-location-map mt-3 no-print">
+                <iframe
+                  title="{{ t.location }}"
+                  src="{{ scan.map_embed_url }}"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe>
+              </div>
+              {% endif %}
+
+            </div>
+          </div>
+
+          {% if scan.recommendation or farmer_guide %}
+          <div class="card result-panel treatment-card border-0{% if scan.result_health == 'unknown' or is_not_rice %} treatment-card-notice{% endif %}">
+            <div class="card-body p-3 p-md-4">
+              <div class="treatment-card-header mb-3">
+                <div class="treatment-card-icon">
+                  {% if scan.result_health == "unknown" or is_not_rice %}
+                  <i class="bi bi-info-circle"></i>
+                  {% else %}
+                  <i class="bi bi-journal-medical"></i>
+                  {% endif %}
+                </div>
+                <div class="min-w-0">
+                  <h2 class="treatment-card-title h6 mb-0">
+                    {% if scan.result_health == "unknown" or is_not_rice %}
+                    {{ t.what_this_means }}
+                    {% elif farmer_guide %}
+                    {{ t.what_to_do_next }}
+                    {% else %}
+                    {{ t.recommendation }}
+                    {% endif %}
+                  </h2>
+                  {% if farmer_guide %}
+                  <p class="treatment-disease-name mb-0">
+                    {{ farmer_guide.name }}
+                    <span class="treatment-pathogen">{{ farmer_guide.pathogen }}</span>
+                  </p>
+                  {% if farmer_guide.local_names %}
+                  <p class="guide-local-names mb-0">
+                    {% for n in farmer_guide.local_names %}<span class="badge text-bg-light border">{{ n }}</span>{% endfor %}
+                  </p>
+                  {% endif %}
+                  {% elif recommendation_display.kind == "treatment" %}
+                  <p class="treatment-disease-name mb-0">
+                    {{ recommendation_display.title }}
+                    {% if recommendation_display.subtitle %}
+                    <span class="treatment-pathogen">{{ recommendation_display.subtitle }}</span>
+                    {% endif %}
+                  </p>
+                  {% endif %}
+                </div>
+              </div>
+
+              {% if farmer_guide %}
+              <p class="guide-summary mb-3">{{ farmer_guide.summary }}</p>
+
+              <div class="guide-section guide-priority mb-3">
+                <h3 class="guide-section-title h6"><i class="bi bi-check2-square me-1"></i>{{ t.immediate_actions }}</h3>
+                <ol class="treatment-steps mb-0">
+                  {% for step in farmer_guide.procedure|slice:":3" %}
+                  <li class="treatment-step">
+                    <span class="treatment-step-number">{{ forloop.counter }}</span>
+                    <span class="treatment-step-text">{{ step }}</span>
+                  </li>
+                  {% endfor %}
+                </ol>
+              </div>
+
+              <div class="guide-section guide-section-primary mb-3">
+                <h3 class="guide-section-title h6"><i class="bi bi-list-check me-1"></i>{{ t.complete_procedure }}</h3>
+                <ol class="treatment-steps mb-0">
+                  {% for step in farmer_guide.procedure %}
+                  <li class="treatment-step">
+                    <span class="treatment-step-number">{{ forloop.counter }}</span>
+                    <span class="treatment-step-text">{{ step }}</span>
+                  </li>
+                  {% endfor %}
+                </ol>
+              </div>
+
+              {% if farmer_guide.farmer_tip %}
+              <div class="guide-tip mb-3">
+                <i class="bi bi-lightbulb me-1"></i><strong>{{ t.tip }}</strong> {{ farmer_guide.farmer_tip }}
+              </div>
+              {% endif %}
+
+              {% if farmer_guide.symptoms or farmer_guide.cultural or farmer_guide.pesticides or farmer_guide.chemical or farmer_guide.prevention or farmer_guide.resistant_varieties %}
+              <p class="guide-more-label mb-2"><i class="bi bi-info-circle me-1"></i>{{ t.more_guidance }}</p>
+              <div class="accordion result-accordion" id="guideAccordion">
+                {% if farmer_guide.symptoms %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideSymptoms">
+                      <i class="bi bi-eye me-2"></i>{{ t.symptoms }}
+                    </button>
+                  </h3>
+                  <div id="guideSymptoms" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                    <div class="accordion-body">
+                      <ul class="guide-list mb-0">
+                        {% for item in farmer_guide.symptoms %}<li>{{ item }}</li>{% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% if farmer_guide.cultural %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideCultural">
+                      <i class="bi bi-tree me-2"></i>{{ t.cultural }}
+                    </button>
+                  </h3>
+                  <div id="guideCultural" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                    <div class="accordion-body">
+                      <ul class="guide-list mb-0">
+                        {% for item in farmer_guide.cultural %}<li>{{ item }}</li>{% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% if farmer_guide.pesticides %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guidePesticides">
+                      <i class="bi bi-prescription2 me-2"></i>{{ t.pesticide_options }}
+                    </button>
+                  </h3>
+                  <div id="guidePesticides" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                    <div class="accordion-body pesticide-guide-body">
+                      <p class="pesticide-disclaimer small text-muted mb-3">{{ pesticide_disclaimer }}</p>
+
+                      <h4 class="pesticide-subhead"><i class="bi bi-moisture me-1"></i>{{ t.wet_or_dry }}</h4>
+                      <p class="pesticide-subhead-note mb-2">{{ t.field_mode_note|safe }}</p>
+                      <div class="field-mode-grid">
+                        {% for mode in pesticide_application.field_modes %}
+                        <article class="field-mode-card field-mode-card--{{ mode.key }}">
+                          <div class="field-mode-hero" aria-hidden="true">
+                            <span class="field-mode-icon"><i class="bi {{ mode.icon }}"></i></span>
+                            <span class="field-mode-hero-label">{{ mode.title }}</span>
+                          </div>
+                          <div class="field-mode-body">
+                            <p class="field-mode-local">{{ mode.local_name }} · {{ mode.summary }}</p>
+                            <ul class="field-mode-points">
+                              {% for point in mode.points %}
+                              <li>{{ point }}</li>
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        </article>
+                        {% endfor %}
+                      </div>
+
+                      <h4 class="pesticide-subhead mt-3"><i class="bi bi-list-ol me-1"></i>{{ t.how_to_apply }}</h4>
+                      <ol class="apply-steps">
+                        {% for step in pesticide_application.spray_steps %}
+                        <li class="apply-step">
+                          <span class="apply-step-icon" aria-hidden="true"><i class="bi {{ step.icon }}"></i></span>
+                          <span>
+                            <strong class="apply-step-title">{{ step.title }}</strong>
+                            <span class="apply-step-detail">{{ step.detail }}</span>
+                          </span>
+                        </li>
+                        {% endfor %}
+                      </ol>
+
+                      <h4 class="pesticide-subhead mt-3"><i class="bi bi-box-seam me-1"></i>{{ t.fpa_products }}</h4>
+                      <p class="pesticide-subhead-note mb-3">{{ t.numbered_boxes_note|safe }}</p>
+                      <div class="pesticide-cards">
+                        {% for px in farmer_guide.pesticides %}
+                        {% if not forloop.first %}
+                        <div class="pesticide-separator my-3" role="separator" style="border-top:4px dashed {{ px.sign_color }}; padding-top:10px; text-align:center;">
+                          <span class="badge text-bg-dark" style="font-size:0.8rem; letter-spacing:0.04em;">▼ {{ t.next_pesticide }}</span>
+                        </div>
+                        {% endif %}
+                        <article class="pesticide-card pesticide-card--{{ px.pack_key }} card mb-3" style="border:3px solid {{ px.sign_color }}; border-radius:10px; overflow:hidden;">
+                          <header class="pesticide-sign card-header text-white py-2" style="background:{{ px.sign_color }}; border-bottom:3px solid {{ px.sign_color }};">
+                            <div class="d-flex align-items-center gap-2">
+                              <span class="pesticide-sign-num" style="display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:999px;background:#fff;color:{{ px.sign_color }};font-weight:800;">{{ forloop.counter }}</span>
+                              <span class="pesticide-sign-copy">
+                                <span class="d-block small text-uppercase" style="opacity:.85;letter-spacing:.06em;">{% with total=farmer_guide.pesticides|length %}{% format_str t.pesticide_n_of n=forloop.counter total=total %}{% endwith %}</span>
+                                <strong class="pesticide-sign-name fs-6">{{ px.product }}</strong>
+                              </span>
+                            </div>
+                          </header>
+                          <div class="pesticide-card-top card-body pb-2">
+                            <div class="pesticide-pack pesticide-pack--{{ px.pack_key }}" aria-hidden="true" style="background:{{ px.sign_color }};color:#fff;border-radius:10px;min-width:72px;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                              <i class="bi {{ px.pack_icon }}"></i>
+                              <span class="pesticide-pack-form">{{ px.form }}</span>
+                            </div>
+                            <div class="pesticide-card-meta">
+                              <p class="pesticide-card-active mb-2"><strong>{{ t.active }}</strong> {{ px.active_ingredient }}</p>
+                              <div class="pesticide-badges mb-2">
+                                <span class="badge text-bg-light border">{{ px.method_label }}</span>
+                                {% if px.method == "granular" %}
+                                <span class="badge text-bg-info">{{ t.best_wet }}</span>
+                                {% elif px.method == "foliar" %}
+                                <span class="badge text-bg-warning">{{ t.spray_dry }}</span>
+                                {% else %}
+                                <span class="badge text-bg-secondary">{{ t.before_sowing }}</span>
+                                {% endif %}
+                              </div>
+                              <table class="table table-sm table-bordered mb-0 pesticide-facts-table">
+                                <tr>
+                                  <th style="width:4.5rem;background:#f8f9fa;">{{ t.when }}</th>
+                                  <td>{{ px.timing }}</td>
+                                </tr>
+                                <tr>
+                                  <th style="background:#f8f9fa;">{{ t.rate }}</th>
+                                  <td>{{ px.rate }}</td>
+                                </tr>
+                              </table>
+                            </div>
+                          </div>
+                          <div class="pesticide-howto px-3 pb-3">
+                            <div class="pesticide-water-notes border rounded p-2 mb-2" style="border-color:{{ px.sign_color }} !important;">
+                              <p class="mb-1"><strong>{{ t.wet_field }}</strong> {{ px.wet_field }}</p>
+                              <p class="mb-0"><strong>{{ t.dry_field }}</strong> {{ px.dry_field }}</p>
+                            </div>
+                            {% if px.note %}
+                            <p class="pesticide-card-note mb-0"><i class="bi bi-info-circle me-1"></i>{{ px.note }}</p>
+                            {% endif %}
+                            <details class="mt-2">
+                              <summary class="small fw-semibold">{{ t.show_mixing }}</summary>
+                              <ol class="small mt-2 mb-0 ps-3">
+                                {% for step in px.how_to %}
+                                <li>{{ step }}</li>
+                                {% endfor %}
+                              </ol>
+                            </details>
+                          </div>
+                        </article>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% if farmer_guide.chemical %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideChemical">
+                      <i class="bi bi-droplet me-2"></i>{{ t.spray_guidelines }}
+                    </button>
+                  </h3>
+                  <div id="guideChemical" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                    <div class="accordion-body">
+                      <ul class="guide-list mb-0">
+                        {% for item in farmer_guide.chemical %}<li>{{ item }}</li>{% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% if farmer_guide.prevention %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guidePrevention">
+                      <i class="bi bi-shield-check me-2"></i>{{ t.prevention }}
+                    </button>
+                  </h3>
+                  <div id="guidePrevention" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                    <div class="accordion-body">
+                      <ul class="guide-list mb-0">
+                        {% for item in farmer_guide.prevention %}<li>{{ item }}</li>{% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% if farmer_guide.resistant_varieties %}
+                <div class="accordion-item">
+                  <h3 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#guideVarieties">
+                      <i class="bi bi-seedling me-2"></i>{{ t.resistant_varieties }}
+                    </button>
+                  </h3>
+                  <div id="guideVarieties" class="accordion-collapse collapse" data-bs-parent="#guideAccordion">
+                    <div class="accordion-body">
+                      <ul class="guide-list mb-0">
+                        {% for item in farmer_guide.resistant_varieties %}<li>{{ item }}</li>{% endfor %}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+              {% endif %}
+
+              <p class="guide-source mt-3 mb-0 small text-muted">
+                <i class="bi bi-book me-1"></i>
+                {{ t.based_on }} <a href="{{ philrice_source_url }}" target="_blank" rel="noopener">{{ philrice_source }}</a>.
+                {{ t.confirm_products }}
+              </p>
+
+              {% elif recommendation_display.kind == "treatment" %}
+              <ol class="treatment-steps mb-0">
+                {% for step in recommendation_display.steps %}
+                <li class="treatment-step">
+                  <span class="treatment-step-number">{{ forloop.counter }}</span>
+                  <span class="treatment-step-text">{{ step }}</span>
+                </li>
+                {% endfor %}
+              </ol>
+              {% elif recommendation_display.kind == "notice" %}
+              {% if recommendation_display.intro %}
+              <p class="treatment-intro mb-3">{{ recommendation_display.intro|linebreaksbr }}</p>
+              {% endif %}
+              {% if recommendation_display.bullets %}
+              <ul class="treatment-bullets mb-0">
+                {% for item in recommendation_display.bullets %}
+                <li>{{ item }}</li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+              {% else %}
+              <p class="treatment-plain mb-0">{{ recommendation_display.text|linebreaksbr }}</p>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      {% if training_samples %}
+      <section class="card result-panel border-0 mt-4">
+        <div class="card-body p-3 p-md-4">
+          <div class="d-flex justify-content-between align-items-center gap-2 mb-3 flex-wrap">
+            <h2 class="result-panel-title h6 mb-0">
+            <i class="bi bi-images me-2"></i>{{ t.reference_samples }}
+            </h2>
+            <span class="reference-chip text-capitalize">{{ training_samples.0.disease }}</span>
+          </div>
+          {% if best_training_match %}
+          <div class="reference-match-card mb-3">
+            <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-2">
+              <span class="reference-match-title"><i class="bi bi-check-circle me-1"></i>{{ t.best_training_match }}</span>
+              <span class="reference-match-score">{{ t.similarity }} {{ best_training_match.similarity }}%</span>
+            </div>
+            <div class="reference-match-note">
+              {{ t.best_match_note }}
+            </div>
+          </div>
+          <div class="row g-3 align-items-start mb-4">
+            <div class="col-4 col-sm-3 col-md-2">
+              <div class="result-sample-thumb result-sample-thumb-featured">
+                <button type="button" class="result-photo-open result-photo-open--thumb" data-photo-preview="{% url 'training_sample_image' disease=best_training_match.disease filename=best_training_match.filename %}{% if best_training_match.relpath %}?relpath={{ best_training_match.relpath|urlencode }}{% endif %}" data-photo-alt="{% format_str t.alt_best_training_match disease=best_training_match.disease %}" aria-label="{{ t.tap_to_enlarge }}">
+                  <img
+                    src="{% url 'training_sample_image' disease=best_training_match.disease filename=best_training_match.filename %}{% if best_training_match.relpath %}?relpath={{ best_training_match.relpath|urlencode }}{% endif %}"
+                    alt="{% format_str t.alt_best_training_match disease=best_training_match.disease %}"
+                    loading="lazy"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <p class="reference-grid-title mb-3">
+            {{ t.more_sample_photos }}
+          </p>
+          <div class="row g-2 g-sm-3 result-samples-grid">
+            {% for sample in training_samples %}
+            <div class="col-4 col-sm-3 col-md-2">
+              <div class="result-sample-thumb">
+                <button type="button" class="result-photo-open result-photo-open--thumb" data-photo-preview="{% url 'training_sample_image' disease=sample.disease filename=sample.filename %}{% if sample.relpath %}?relpath={{ sample.relpath|urlencode }}{% endif %}" data-photo-alt="{% format_str t.alt_reference_sample disease=sample.disease %}" aria-label="{{ t.tap_to_enlarge }}">
+                  <img
+                    src="{% url 'training_sample_image' disease=sample.disease filename=sample.filename %}{% if sample.relpath %}?relpath={{ sample.relpath|urlencode }}{% endif %}"
+                    alt="{% format_str t.alt_reference_sample disease=sample.disease %}"
+                    loading="lazy"
+                  />
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+      <div class="result-actions mt-4 pt-2 d-flex flex-wrap gap-2 no-print">
+        <a href="/?new_scan=1" class="btn btn-success" data-clear-draft>
+          <i class="bi bi-camera me-2"></i>{{ t.scan_another }}
+        </a>
+        <a href="{% url 'scan_history' %}" class="btn btn-outline-secondary">
+          <i class="bi bi-clock-history me-2"></i>{{ t.history }}
+        </a>
+        <button type="button" class="btn btn-outline-secondary" id="printResultBtnBottom">
+          <i class="bi bi-printer me-2"></i>{{ t.print_result }}
+        </button>
+      </div>
+
+      <div class="print-footer d-none">
+        <hr class="print-hr" />
+        <p class="print-footer-text mb-0">
+          {{ t.print_footer }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="photoPreviewModal" class="photo-preview-modal no-print" hidden>
+  <div class="photo-preview-backdrop" data-photo-preview-close></div>
+  <div class="photo-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="photoPreviewTitle">
+    <div class="photo-preview-toolbar">
+      <h2 id="photoPreviewTitle" class="photo-preview-title">{{ t.your_leaf_photo }}</h2>
+      <button type="button" class="photo-preview-close" data-photo-preview-close aria-label="{{ t.close_photo_preview }}">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <img id="photoPreviewImage" class="photo-preview-image" alt="" />
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  (function () {
+    function stampPrintedAt() {
+      var el = document.getElementById('printedAtStamp');
+      if (!el) return;
+      try {
+        el.textContent = new Date().toLocaleString();
+      } catch (e) {
+        el.textContent = new Date().toString();
+      }
+    }
+
+    function openAllAccordions() {
+      document.querySelectorAll('.result-accordion .accordion-collapse').forEach(function (el) {
+        el.classList.add('show');
+      });
+      document.querySelectorAll('.result-accordion .accordion-button').forEach(function (btn) {
+        btn.classList.remove('collapsed');
+        btn.setAttribute('aria-expanded', 'true');
+      });
+    }
+
+    function printResult() {
+      stampPrintedAt();
+      openAllAccordions();
+      setTimeout(function () { window.print(); }, 80);
+    }
+
+    ['printResultBtn', 'printResultBtnBottom'].forEach(function (id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.addEventListener('click', printResult);
+    });
+
+    window.addEventListener('beforeprint', function () {
+      stampPrintedAt();
+      openAllAccordions();
+    });
+
+    var photoModal = document.getElementById('photoPreviewModal');
+    var photoImage = document.getElementById('photoPreviewImage');
+    var photoTitle = document.getElementById('photoPreviewTitle');
+    var lastPhotoTrigger = null;
+
+    function closePhotoPreview() {
+      if (!photoModal || photoModal.hidden) return;
+      photoModal.hidden = true;
+      document.body.classList.remove('photo-preview-open');
+      if (photoImage) {
+        photoImage.removeAttribute('src');
+        photoImage.alt = '';
+      }
+      if (lastPhotoTrigger && typeof lastPhotoTrigger.focus === 'function') {
+        lastPhotoTrigger.focus();
+      }
+      lastPhotoTrigger = null;
+    }
+
+    function openPhotoPreview(trigger) {
+      if (!photoModal || !photoImage || !trigger) return;
+      var src = trigger.getAttribute('data-photo-preview');
+      if (!src) return;
+      lastPhotoTrigger = trigger;
+      photoImage.src = src;
+      photoImage.alt = trigger.getAttribute('data-photo-alt') || '';
+      if (photoTitle) {
+        photoTitle.textContent = photoImage.alt || photoTitle.textContent;
+      }
+      photoModal.hidden = false;
+      document.body.classList.add('photo-preview-open');
+      var closeBtn = photoModal.querySelector('.photo-preview-close');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    document.querySelectorAll('[data-photo-preview]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        openPhotoPreview(el);
+      });
+    });
+
+    if (photoModal) {
+      photoModal.querySelectorAll('[data-photo-preview-close]').forEach(function (el) {
+        el.addEventListener('click', closePhotoPreview);
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        closePhotoPreview();
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+        stampPrintedAt();
+        openAllAccordions();
+      }
+    });
+  })();
+</script>
+</body>
+</html>
